@@ -1,6 +1,6 @@
 # PL2023 - TPC2
 
-O trabalho para casa 2, da cadeira de processamento de linguagens, consiste na criação de um somador On/Off
+O trabalho para casa 2, da unidade curricular de processamento de linguagens, consiste na criação de um somador On/Off
 
 O trabalho para casa é, portanto, um programa python ('somador.py') com o seguinte comportamento:
 
