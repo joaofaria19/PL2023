@@ -21,10 +21,10 @@ def extrair(texto):
         if texto[i] == '=':
             palavras.append('=')
             i += 1
-        elif texto[i] == 'o' and texto[i+1] == 'n':
+        elif texto[i].lower() == 'o' and texto[i+1].lower() == 'n':
             palavras.append('on')
             i += 2
-        elif texto[i] == 'o' and texto[i+1] == 'f' and texto[i+2] == 'f':
+        elif texto[i].lower() == 'o' and texto[i+1].lower() == 'f' and texto[i+2].lower() == 'f':
             palavras.append('off')
             i += 3
         elif texto[i].isdigit():
