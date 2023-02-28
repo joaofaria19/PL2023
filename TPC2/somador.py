@@ -49,7 +49,7 @@ def run(texto):
         elif word =='off':
             on_stack.pop()
         elif word == '=':
-            print(">> "+ str(soma))
+            print("\n>> "+ str(soma))
         elif len(on_stack) > 0:
             soma += (word)
 
