@@ -1,7 +1,9 @@
 import sys
+"""
+    Função auxiliar para converter listas de caracteres referentes a digitos
+no seu devido valor numérico
+"""
 
-# Função auxiliar para converter listas de caracteres referentes a digitos
-# no seu devido valor numérico
 def list_to_digit(lista):
     l = len(lista)
     n=1
@@ -11,9 +13,10 @@ def list_to_digit(lista):
         n *= 10
         l-=1
     return num
-
-# Função responsável por recolher do texto uma lista de palavras contendo,
-# apenas, as palavras chaves ('on','off',=) e os digitos a serem somados.
+"""
+    Função responsável por recolher do texto uma lista de palavras contendo,
+apenas, as palavras chaves ('on','off',=) e os digitos a serem somados.
+"""
 def extrair(texto):
     palavras = []
     i = 0
@@ -36,10 +39,11 @@ def extrair(texto):
             i += 1
     return palavras
 
-
-# Função que tem como base uma stack de palavras on, e que através da mesma
-# permite determinar se a soma deve ser efetuada ou não. 
-# (A soma acontece apenas quando existe uma quantidade de 'on' igual a quantidade de 'off') 
+""""
+    Função que tem como base uma stack de palavras on, e que através da mesma
+permite determinar se a soma deve ser efetuada ou não. (A soma acontece apenas quando existe 
+uma quantidade de 'on' igual a quantidade de 'off') 
+"""
 def run(texto):
     on_stack = []
     soma = 0
