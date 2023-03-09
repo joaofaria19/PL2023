@@ -5,7 +5,7 @@ f_apelidos = open('./testes/apelidos.txt','w')
 
 
 f = open('processos.txt','r')
-lines=f.readfiles()
+lines=f.readlines()
 
 """
     Função responsável por imprimir uma tabela formatada, confoorme
@@ -136,4 +136,31 @@ def getTop5(dictS):
     
     return dictNew
 
-printDistribution2(getTop5(frequencia_por_nome(lines,data_seculo(lines))),"Século","Nome mais utilizado","Apelido mais utilizado")
+
+
+def printMenu():
+    print("\n\n")
+    print("+-| Frequêcia de processos por nome e apelido |-+")
+    print("|                                                |")
+    print("| Como pretende ver os dados?                    |")
+    print("| (1) Numa tabela                                |")
+    print("| (2) Impressos no terminal                      |")
+    print("| (3) Sair                                       |")
+    print("+--------------------|      |--------------------+")
+    print("\n")
+    return input(">>")
+
+
+def menu():
+    while True:
+        option = printMenu()
+        if option == "1":
+            printDistribution2(getTop5(frequencia_por_nome(lines,data_seculo(lines))),"Século","Nome mais utilizado","Apelido mais utilizado")
+        elif option == "2":
+            print(getTop5(frequencia_por_nome(lines,data_seculo(lines))))
+        elif option == "3":
+            print("Programa interrompido!")
+            exit(0)
+        input(">>Pressione ENTER para voltar...")
+
+menu()

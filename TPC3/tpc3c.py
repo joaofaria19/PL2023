@@ -63,7 +63,34 @@ def parentesco(lines):
         n_line+=1
     return dictP
 
-barChart(parentesco(lines),"Grau de parentesco", "Nº de encontrados")
-printDistribution(parentesco(lines),"Grau de parentesco", "Nº de encontrados")
-        
+
+def printMenu():
+    print("\n\n")
+    print("+----| Frequência de processos por relação |-----+")
+    print("|                                                |")
+    print("| Como pretende ver os dados?                    |")
+    print("| (1) Num grádico de barras                      |")
+    print("| (2) Numa tabela                                |")
+    print("| (3) Impressos no terminal                      |")
+    print("| (4) Sair                                       |")
+    print("+--------------------|      |--------------------+")
+    print("\n")
+    return input(">>")
+
+
+def menu():
+    while True:
+        option = printMenu()
+        if option == "1":
+            barChart(parentesco(lines),"Grau de parentesco", "Nº de pessoas")
+        elif option == "2":
+            printDistribution(parentesco(lines),"Grau de parentesco", "Nº de pessoas")
+        elif option == "3":
+            print(parentesco(lines))
+        elif option == "4":
+            print("Programa interrompido!")
+            exit(0)
+        input(">>Pressione ENTER para voltar...")
+
+menu()
 

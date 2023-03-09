@@ -11,11 +11,12 @@ def barChart(someDict,text1,text2):
     keys = list(someDict.keys())
     values = list(someDict.values())
     
-    plt.bar(keys, values, color ='red', width = 0.4)
-    plt.xticks(rotation=300, fontsize=6)
+    plt.bar(keys, values, color ='red', width = 0.6)
+    plt.xticks(rotation=270, fontsize=5)
     
     plt.xlabel(text1)
     plt.ylabel(text2)
+    plt.tight_layout()
     plt.show()
 """
     Função responsável por imprimir uma tabela formatada, confoorme
@@ -59,5 +60,32 @@ def processos_por_ano(lines):
                 dictA[ano.group(1)] = 1
     return dictA
 
-barChart(processos_por_ano(lines),"Ano","Nº processo")
-printDistribution(processos_por_ano(lines),"Ano","Nº processo")
+def printMenu():
+    print("\n\n")
+    print("+------| Frequência de processos por ano |-------+")
+    print("|                                                |")
+    print("| Como pretende ver os dados?                    |")
+    print("| (1) Num grádico de barras                      |")
+    print("| (2) Numa tabela                                |")
+    print("| (3) Impressos no terminal                      |")
+    print("| (4) Sair                                       |")
+    print("+--------------------|      |--------------------+")
+    print("\n")
+    return input(">>")
+
+
+def menu():
+    while True:
+        option = printMenu()
+        if option == "1":
+            barChart(processos_por_ano(lines),"Ano","Nº processo")
+        elif option == "2":
+            printDistribution(processos_por_ano(lines),"Ano","Nº processo")            
+        elif option == "3":
+            print(processos_por_ano(lines))            
+        elif option == "4":
+            print("Programa interrompido!")
+            exit(0)
+        input(">>Pressione ENTER para voltar...")
+
+menu()
