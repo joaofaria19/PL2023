@@ -1,0 +1,19 @@
+{
+    "alunos": [
+        {
+            "Numero": "3162",
+            "Nome": "Cândido Faísca",
+            "Curso": "Teatro"
+        },
+        {
+            "Numero": "7777",
+            "Nome": "Cristiano Ronaldo",
+            "Curso": "Desporto"
+        },
+        {
+            "Numero": "264",
+            "Nome": "Marcelo Sousa",
+            "Curso": "Ciência Política"
+        }
+    ]
+}
