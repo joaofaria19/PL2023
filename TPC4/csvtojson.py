@@ -1,34 +1,75 @@
 import json
 import re
 
-f = open('./csv/dataset2.csv','r')
-f_json = open('./json/dataset2.json','w')
-lines = f.readlines()
+f = open('./csv/dataset5.csv','r')
+f_json = open('./json/dataset5.json','w')
 
-#dataset1
+lines = f.readlines()
 
 first_line = lines.pop(0)
 
-headExp = re.compile(r'^(?P<primeira>\w+),(?P<segunda>\w+),(?P<terceira>\w+)(,)*(?P<quarta>\w+[\{\d+\}|\{\d+,\d+\}])*(::)*(?P<operator>\w+)*(?P<n_notas>,+)*$')
-# notasExp = re.compile(r'(?P<quarta>\w+[{\d+}|{\d+,\d+}])*(::)*(?P<operator>\w+)*(,+)')
-bodyExp = re.compile(r'^(?P<numero>\d+),(?P<nome>(\w+\s*)+),(?P<curso>(\w+\s*)+),*(?P<notas>(\d+|,)+)*$')
+header = re.split(r'(?<=[a-zA-Z]),(?=[a-zA-Z])',first_line.strip())
 
-headmatch = headExp.search(first_line)
+bodyExp = re.compile(r'^(?P<numero>\d+),(?P<nome>(\w+\s*)+),(?P<curso>(\w+\s*)+),*(?P<notas>(\d+|,)+)*$',re.UNICODE)
+
+maxMinExp = re.compile(r'^\w+(\{(?P<nota>\d+)\}|\{(?P<ni>\d+),(?P<ns>\d+)\})')
+
+operatorExp = re.compile(r'(::)(?P<operator>\w+),')
+
+
 dictjson={}
 dictjson['alunos'] = []
+
 for line in lines:
     dictaux={}
     match = bodyExp.search(line.strip())
-    dictaux[headmatch.group('primeira')] = match.group('numero')
-    dictaux[headmatch.group('segunda')] = match.group('nome')
-    dictaux[headmatch.group('terceira')] = match.group('curso')
+    dictaux[header[0]] = match.group('numero')
+    dictaux[header[1]] = match.group('nome')
+    dictaux[header[2]] = match.group('curso')
+
+    if len(header)>3:
+        match_nota = maxMinExp.search(header[3])
+        lista_notas = []
+        if match_nota.group('nota'):
+            maximo = int(match_nota.group('nota'))
+            notas_group = match.group('notas')
+            notas = re.split(',',notas_group)
+            for i in range(0,maximo):
+                lista_notas.append(notas[i])
+        else: 
+            minimo = int(match_nota.group('ni'))
+            maximo = int(match_nota.group('ns'))
+            notas_group = match.group('notas')
+            notas = re.split(',',notas_group)
+            for i in range(0,maximo):
+                if(notas[i].isdigit()):
+                    lista_notas.append(notas[i])
+        dictaux['Notas'] = lista_notas
+        
+        match_operator = operatorExp.search(header[3])
+        if match_operator:
+            op = match_operator.group('operator')
+            notas_group = match.group('notas')
+            notas = re.split(',',notas_group)
+            if op.lower() == 'sum':
+                valor = 0
+                for nota in notas:
+                    if nota.isdigit():
+                        valor+= int(nota)
+                dictaux['Notas_sum'] = valor
+            elif op.lower() == 'media':
+                valor=0
+                for nota in notas:
+                    if nota.isdigit():
+                        valor+= int(nota)
+                valor /= len(notas)
+                dictaux['Notas_media'] = valor
+            elif op.lower() == 'min':
+                dictaux['Notas_media'] = min(notas)
+            elif op.lower() == 'max':
+                dictaux['Notas_media'] = max(notas)
+
     dictjson['alunos'].append(dictaux)
 
-    if len(match.groups())>3:
-        max_notas = len(headmatch.group('n_notas'))
-        # notas = len(match.group('notas'))
 
-
-
-    #dictjson[headmatch.group('primeira')] = match.group('notas')
 json.dump(dictjson,f_json,indent=4,ensure_ascii=False)
