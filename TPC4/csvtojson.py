@@ -14,7 +14,7 @@ bodyExp = re.compile(r'^(?P<numero>\d+),(?P<nome>(\w+\s*)+),(?P<curso>(\w+\s*)+)
 
 maxMinExp = re.compile(r'^\w+(\{(?P<nota>\d+)\}|\{(?P<ni>\d+),(?P<ns>\d+)\})')
 
-operatorExp = re.compile(r'(::)(?P<operator>\w+),')
+operatorExp = re.compile(r'(::)(?P<operator>\w+)')
 
 
 dictjson={}
@@ -46,28 +46,29 @@ for line in lines:
                     lista_notas.append(notas[i])
         dictaux['Notas'] = lista_notas
         
-        match_operator = operatorExp.search(header[3])
+        match_operator = operatorExp.finditer(header[3])
         if match_operator:
-            op = match_operator.group('operator')
             notas_group = match.group('notas')
             notas = re.split(',',notas_group)
-            if op.lower() == 'sum':
-                valor = 0
-                for nota in notas:
-                    if nota.isdigit():
-                        valor+= int(nota)
-                dictaux['Notas_sum'] = valor
-            elif op.lower() == 'media':
-                valor=0
-                for nota in notas:
-                    if nota.isdigit():
-                        valor+= int(nota)
-                valor /= len(notas)
-                dictaux['Notas_media'] = valor
-            elif op.lower() == 'min':
-                dictaux['Notas_media'] = min(notas)
-            elif op.lower() == 'max':
-                dictaux['Notas_media'] = max(notas)
+            for match in match_operator:
+                op = match['operator']
+                if op.lower() == 'sum':
+                    valor = 0
+                    for nota in notas:
+                        if nota.isdigit():
+                            valor+= int(nota)
+                    dictaux['Notas_sum'] = valor
+                elif op.lower() == 'media':
+                    valor=0
+                    for nota in notas:
+                        if nota.isdigit():
+                            valor+= int(nota)
+                    valor /= len(notas)
+                    dictaux['Notas_media'] = valor
+                elif op.lower() == 'min':
+                    dictaux['Notas_media'] = min(notas)
+                elif op.lower() == 'max':
+                    dictaux['Notas_media'] = max(notas)
 
     dictjson['alunos'].append(dictaux)
 
