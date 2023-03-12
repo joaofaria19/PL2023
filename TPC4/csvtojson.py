@@ -66,9 +66,9 @@ for line in lines:
                     valor /= len(notas)
                     dictaux['Notas_media'] = valor
                 elif op.lower() == 'min':
-                    dictaux['Notas_media'] = min(notas)
+                    dictaux['Nota_min'] = min(notas)
                 elif op.lower() == 'max':
-                    dictaux['Notas_media'] = max(notas)
+                    dictaux['Nota_max'] = max(notas)
 
     dictjson['alunos'].append(dictaux)
 
