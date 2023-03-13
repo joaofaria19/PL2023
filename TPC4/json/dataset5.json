@@ -9,8 +9,10 @@
                 "13",
                 "14"
             ],
-            "Notas_sum": 39,
-            "Notas_media": 7.8
+            "Notas_sum": 39.0,
+            "Notas_media": 7.8,
+            "Nota_min": "12",
+            "Nota_max": "14"
         },
         {
             "Número": "7777",
@@ -23,8 +25,10 @@
                 "11",
                 "12"
             ],
-            "Notas_sum": 72,
-            "Notas_media": 14.4
+            "Notas_sum": 72.0,
+            "Notas_media": 14.4,
+            "Nota_min": "11",
+            "Nota_max": "20"
         },
         {
             "Número": "264",
@@ -36,8 +40,10 @@
                 "19",
                 "20"
             ],
-            "Notas_sum": 76,
-            "Notas_media": 15.2
+            "Notas_sum": 76.0,
+            "Notas_media": 15.2,
+            "Nota_min": "18",
+            "Nota_max": "20"
         }
     ]
 }

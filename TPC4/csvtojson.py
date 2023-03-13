@@ -22,53 +22,60 @@ dictjson['alunos'] = []
 
 for line in lines:
     dictaux={}
-    match = bodyExp.search(line.strip())
-    dictaux[header[0]] = match.group('numero')
-    dictaux[header[1]] = match.group('nome')
-    dictaux[header[2]] = match.group('curso')
-
-    if len(header)>3:
-        match_nota = maxMinExp.search(header[3])
-        lista_notas = []
-        if match_nota.group('nota'):
-            maximo = int(match_nota.group('nota'))
-            notas_group = match.group('notas')
-            notas = re.split(',',notas_group)
-            for i in range(0,maximo):
-                lista_notas.append(notas[i])
-        else: 
-            minimo = int(match_nota.group('ni'))
-            maximo = int(match_nota.group('ns'))
-            notas_group = match.group('notas')
-            notas = re.split(',',notas_group)
-            for i in range(0,maximo):
-                if(notas[i].isdigit()):
+    if header>2:
+        match = bodyExp.search(line.strip())
+        dictaux[header[0]] = match.group('numero')
+        dictaux[header[1]] = match.group('nome')
+        dictaux[header[2]] = match.group('curso')
+    
+        if len(header)>3:
+            match_nota = maxMinExp.search(header[3])
+            lista_notas = []
+            if match_nota.group('nota'):
+                maximo = int(match_nota.group('nota'))
+                notas_group = match.group('notas')
+                notas = re.split(',',notas_group)
+                for i in range(0,maximo):
                     lista_notas.append(notas[i])
-        dictaux['Notas'] = lista_notas
-        
-        match_operator = operatorExp.finditer(header[3])
-        if match_operator:
-            notas_group = match.group('notas')
-            notas = re.split(',',notas_group)
-            for match in match_operator:
-                op = match['operator']
-                if op.lower() == 'sum':
-                    valor = 0
-                    for nota in notas:
-                        if nota.isdigit():
-                            valor+= int(nota)
-                    dictaux['Notas_sum'] = valor
-                elif op.lower() == 'media':
-                    valor=0
-                    for nota in notas:
-                        if nota.isdigit():
-                            valor+= int(nota)
-                    valor /= len(notas)
-                    dictaux['Notas_media'] = valor
-                elif op.lower() == 'min':
-                    dictaux['Nota_min'] = min(notas)
-                elif op.lower() == 'max':
-                    dictaux['Nota_max'] = max(notas)
+            else: 
+                minimo = int(match_nota.group('ni'))
+                maximo = int(match_nota.group('ns'))
+                notas_group = match.group('notas')
+                notas = re.split(',',notas_group)
+                for i in range(0,maximo):
+                    if(notas[i].isdigit()):
+                        lista_notas.append(notas[i])
+            dictaux['Notas'] = lista_notas
+            
+            match_operator = operatorExp.finditer(header[3])
+            if match_operator:
+                notas_group = match.group('notas')
+                notas = re.split(',',notas_group)
+                print(notas)
+                for match in match_operator:
+                    op = match['operator']
+                    if op.lower() == 'sum':
+                        valor = 0
+                        for nota in notas:
+                            if nota.isdigit():
+                                valor+= float(nota)
+                        dictaux['Notas_sum'] = valor
+                    elif op.lower() == 'media':
+                        valor=0
+                        for nota in notas:
+                            if nota.isdigit():
+                                valor+= float(nota)
+                        valor /= len(notas)
+                        dictaux['Notas_media'] = valor
+                    elif op.lower() == 'min':
+                        valor = notas[0]
+                        for nota in notas:
+                            if nota.isdigit():
+                                if nota < valor:
+                                    valor = nota
+                        dictaux['Nota_min'] = valor
+                    elif op.lower() == 'max':
+                        dictaux['Nota_max'] = max(notas)
 
     dictjson['alunos'].append(dictaux)
 
