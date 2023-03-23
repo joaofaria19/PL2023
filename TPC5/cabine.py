@@ -80,6 +80,7 @@ def run():
 
         elif len(stack)>0 and numero_exp.match(linha.strip()):
             if stack[-1].upper() == 'MOEDA': 
+                
                 numero = numero_exp.match(linha).group('numero')
                 if len(numero) >= 9 :
                     if numero[:3] == '601' or numero[3:] == '641':
@@ -88,7 +89,6 @@ def run():
                         if saldo>150:
                             saldo-=150
                             stack.append('T')
-                            print('maq: "saldo %s"' % intToStringCoin(saldo))
                         else:    
                             print('maq: "Saldo insuficiente, necessário 1e50c para realizar a chamada"')
 
@@ -97,8 +97,6 @@ def run():
                             if saldo>25:
                                 saldo-=25
                                 stack.append('T')
-                                print('maq: "saldo %s"' % intToStringCoin(saldo))
-
                             else:    
                                 print('maq: "Saldo insuficiente, necessário 25c para realizar a chamada"')
                         else:
@@ -108,27 +106,38 @@ def run():
                         if len(numero) == 9:   
                             if numero[:3] == '800':
                                 stack.append('T')
-                                print('maq: "saldo %s"' % intToStringCoin(saldo))
                             elif numero[:3] == '808':
                                 if saldo>10:
                                     saldo-=10
                                     stack.append('T')
-                                    print('maq: "saldo %s"' % intToStringCoin(saldo))
+
                                 else:    
                                     print('maq: "Saldo insuficiente, necessário 10c para realizar a chamada"')
                         else:
                             print('maq: "Número incorreto, disque novamente um número com 9 digitos"')
                     else:
+                        stack.append('T')
                         saldo-=15
-                        print('maq: "saldo %s"' % intToStringCoin(saldo))
-        elif linha.strip().upper() == 'POUSAR' or linha.strip().upper() == 'ABORTAR':
-            if len(stack)>0 and stack[-1] == 'T' or  stack[-1] == 'MOEDA':
+                else:
+                    print('maq: "Número incorreto, disque novamente um número com 9 ou mais digitos"')
+                
+                print('maq: "saldo %s"' % intToStringCoin(saldo))
+        elif linha.strip().upper() == 'POUSAR':
+            if 'LEVANTAR' in stack and 'MOEDA' in stack and 'T' in stack:
                 stack = []
                 saldo_string = intToStringCoin(saldo)
                 print('maq: "troco= %s; Volte sempre!"' % saldo_string)
             else:
+                print('maq: "Impossível POUSAR, por favor termine a interação ou então escolha ABORTAR" ')
+        elif linha.strip().upper() == 'ABORTAR':
+            if len(stack)>0 and stack[-1] == 'T' or  stack[-1] == 'MOEDA':
                 stack = []
-                break
+                saldo_string = intToStringCoin(saldo)
+                print('maq: "Interação interrompida; troco= %s"' % saldo_string)
+            else:
+                stack = []
+                print('maq: "Interação interrompida; sem saldo para retornar"')
+            
         else:
             print('maq: "Não é possível realizar a chamada"')
             
