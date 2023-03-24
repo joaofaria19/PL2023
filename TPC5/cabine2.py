@@ -1,0 +1,168 @@
+import re
+import sys
+import ply.lex as lex
+import cabinelex
+
+moedas_exp = re.compile(r'((\d+(c|e)(,\s*|(?=;)|(?=.))*)+)')
+"""
+    Função responsável por pegar num número correspondente a uma moeda ou à soma 
+de várias moedas, e transformar esse número no respetivo formato, uma string correspondente 
+ao valor introduzido.
+"""
+def intToStringCoin(moeda):
+    moeda_euro = int(moeda/100)
+    moeda_cent = moeda - 100*moeda_euro
+    moeda_string = ''
+    if moeda_euro>0 and moeda_cent <= 0:
+        moeda_string = str(moeda_euro)+'e'
+    elif moeda_euro > 0:
+        moeda_string = str(moeda_euro)+'e'+str(moeda_cent)+'c'
+    else:
+        moeda_string = str(moeda_cent)+'c'
+    return moeda_string
+
+"""
+    Função responsável por verificar as várias moedas introduzidas, recebe portanto a lista de moedas introduzidas. 
+Se a moeda for válida esta é adicionada ao valor total de moedas, se a moeda for inválida 
+é acrescentada à lista de moedas inválidas. No final é retornado um tuplo contendo o valor total de moedas e 
+a lista de moedas inválidas (que será convertida numa única string), respetivamente.
+"""
+def moeda_handler(string_moedas):
+    print(string_moedas)
+    moedas_validas = ['5c','10c','20c','50c','1e','2e']
+    moedas_total = 0
+    moedas_invalidas = []
+    lista_moedas = string_moedas.split(',')
+    for moeda in lista_moedas:
+        if moeda not in moedas_validas:
+            moedas_invalidas.append(moeda)
+        else:
+            if moeda == '1e' or moeda == '2e':
+                moeda = moeda[:-1]
+                moeda = int(moeda) * 100
+            else: 
+                moeda = moeda[:-1]
+            moedas_total += int(moeda)
+    
+    moeda_invalidas_string=''
+
+    if len(moedas_invalidas) > 0:
+        for moeda in moedas_invalidas:
+            moeda_invalidas_string += moeda+", "
+
+    return (moedas_total,moeda_invalidas_string)
+
+"""
+    Função run trata de todo o processo para a realização de uma chamada.
+Para cada opção disponível faz a devida verificação se a mesma pode ocorrer ou não.
+Faz uso de uma stack que permite guardar o estado em que o programa se encontra e uma
+variável saldo que representa o saldo atual.
+"""
+def run(token):
+    global saldo
+    global stack
+    # Interação de LEVANTAR
+    if len(stack) == 0 and token.type == 'LEVANTAR':
+        print("maq: 'Introduza moedas'")
+        stack.append(token.type)
+    
+    # Interação de inserir MOEDA
+    elif len(stack) > 0  and token.type == 'MOEDAS':
+        if stack[-1].upper() == 'LEVANTAR' or stack[-1].upper() == 'MOEDA':
+            moedas = moedas_exp.search(token.value).group(0)
+            (total, invalidas) = moeda_handler(moedas)
+            saldo += total
+            total_string = intToStringCoin(saldo)
+            if len(invalidas) == 0:
+                print('maq: "saldo = '+ total_string +'"')
+            else:
+                print('maq: "'+ str(invalidas) +' moeda inválida, saldo = '+total_string+'"')
+            stack.append('MOEDA')
+    
+    # Interação de Telefonar
+    elif len(stack) > 0 and token.type == 'TELEFONE':
+        if stack[-1].upper() == 'MOEDA': 
+            numero = token.value[2:]
+        
+            if len(numero) >= 9 :
+                if numero[:3] == '601' or numero[3:] == '641':
+                    print('maq: "Esse número não é permitido neste telefone. Queira disque um novo número"')
+                elif numero[:2] == '00':
+                    if saldo>=150:
+                        saldo-=150
+                        stack.append('T')
+                    else:    
+                        print('maq: "Saldo insuficiente, necessário 1e50c para realizar a chamada"')
+                elif numero[:1] == '2': 
+                    if len(numero) == 9:   
+                        if saldo>=25:
+                            saldo-=25
+                            stack.append('T')
+                        else:    
+                            print('maq: "Saldo insuficiente, necessário 25c para realizar a chamada"')
+                    else:
+                        print('maq: "Número incorreto, disque novamente um número com 9 digitos"')
+                elif numero[:2] == '80':
+                    if len(numero) == 9:   
+                        if numero[:3] == '800':
+                            stack.append('T')
+                        elif numero[:3] == '808':
+                            if saldo>=10:
+                                saldo-=10
+                                stack.append('T')
+                            else:    
+                                print('maq: "Saldo insuficiente, necessário 10c para realizar a chamada"')
+                    else:
+                        print('maq: "Número incorreto, disque novamente um número com 9 digitos"')
+                else:
+                    print('maq: "Número desconhecido, disque novamente um número"')
+            
+            else:
+                print('maq: "Número incorreto, disque novamente um número com 9 ou mais digitos"')
+            
+            print('maq: "saldo %s"' % intToStringCoin(saldo))
+    
+    # Interação de POUSAR
+    elif token.type == 'POUSAR':
+        if 'LEVANTAR' in stack and 'MOEDA' in stack and 'T' in stack:
+            stack = []
+            saldo_string = intToStringCoin(saldo)
+            print('maq: "troco= %s; Volte sempre!"' % saldo_string)
+            saldo =0
+        else:
+            print('maq: "Impossível POUSAR, por favor termine a interação ou então escolha ABORTAR" ')
+    
+    # Interação de ABORTAR        
+    elif token.type == 'ABORTAR':
+        if len(stack)>0 and stack[-1] == 'T' or  stack[-1] == 'MOEDA':
+            stack = []
+            saldo_string = intToStringCoin(saldo)
+            print('maq: "Interação interrompida; troco= %s"' % saldo_string)
+            saldo = 0
+        else:
+            stack = []
+            print('maq: "Interação interrompida; sem saldo para retornar"')
+    
+    # Interação impossível
+    else:
+        print('maq: "Não é possível realizar a chamada"')
+
+
+"""
+    Função principal que estabelce um valor inicial de saldoe de stack. Usa
+para cada linha inserida a biblioteca cabinelex, a fim de identificar todos os
+tokens, e executar o programa.
+"""
+def lexer():
+    global saldo
+    global stack
+    saldo=0
+    stack=[]
+    for linha in sys.stdin:
+        lex.input(linha)
+        tok = lex.token()
+        run(tok)
+        
+
+lexer()
+

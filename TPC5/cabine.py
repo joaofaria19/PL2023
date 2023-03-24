@@ -1,5 +1,4 @@
 import re
-import ply.lex as lex
 import sys
 
 moedas_exp = re.compile(r'^MOEDA\s+(?P<moedas>(\d+(c|e)(,\s*|(?=;)|(?=.))*)*)')
@@ -56,16 +55,18 @@ def moeda_handler(lista_moedas):
 """
     Função run trata de todo o processo para a realização de uma chamada.
 Para cada opção disponível faz a devida verificação se a mesma pode ocorrer ou não.
-Faz uso de uma stack que permite guardar o estado em que o programa se encontra.
+Faz uso de uma stack que permite guardar o estado em que o programa se encontra e uma
+variável saldo que representa o saldo atual.
 """
 def run():
     saldo = 0
     stack  = []
     for linha in sys.stdin:
-        if linha.strip().upper() == 'LEVANTAR' and len(stack) == 0:
+        # Interação de LEVANTAR
+        if len(stack) == 0 and linha.strip().upper() == 'LEVANTAR':
             print("maq: 'Introduza moedas'")
             stack.append(linha.strip())
-
+        # Interação de inserir MOEDA
         elif len(stack) > 0  and moedas_exp.match(linha.strip()):
             if stack[-1].upper() == 'LEVANTAR' or stack[-1].upper() == 'MOEDA':
                 moedas = moedas_exp.match(linha).group('moedas').split(',')
@@ -77,8 +78,8 @@ def run():
                 else:
                     print('maq: "'+ str(invalidas) +' moeda inválida, saldo = '+total_string+'"')
                 stack.append('MOEDA')
-
-        elif len(stack)>0 and numero_exp.match(linha.strip()):
+        # Interação de Telefonar
+        elif len(stack) > 0 and numero_exp.match(linha.strip()):
             if stack[-1].upper() == 'MOEDA': 
                 
                 numero = numero_exp.match(linha).group('numero')
@@ -86,7 +87,7 @@ def run():
                     if numero[:3] == '601' or numero[3:] == '641':
                         print('maq: "Esse número não é permitido neste telefone. Queira disque um novo número"')
                     elif numero[:2] == '00':
-                        if saldo>150:
+                        if saldo>=150:
                             saldo-=150
                             stack.append('T')
                         else:    
@@ -94,7 +95,7 @@ def run():
 
                     elif numero[:1] == '2': 
                         if len(numero) == 9:   
-                            if saldo>25:
+                            if saldo>=25:
                                 saldo-=25
                                 stack.append('T')
                             else:    
@@ -107,7 +108,7 @@ def run():
                             if numero[:3] == '800':
                                 stack.append('T')
                             elif numero[:3] == '808':
-                                if saldo>10:
+                                if saldo>=10:
                                     saldo-=10
                                     stack.append('T')
 
@@ -116,28 +117,30 @@ def run():
                         else:
                             print('maq: "Número incorreto, disque novamente um número com 9 digitos"')
                     else:
-                        stack.append('T')
-                        saldo-=15
-                else:
-                    print('maq: "Número incorreto, disque novamente um número com 9 ou mais digitos"')
-                
-                print('maq: "saldo %s"' % intToStringCoin(saldo))
+                        print('maq: "Número desconhecido, disque novamente um número"')
+            else:
+                print('maq: "Número incorreto, disque novamente um número com 9 ou mais digitos"')
+            print('maq: "saldo %s"' % intToStringCoin(saldo))
+        # Interação de POUSAR
         elif linha.strip().upper() == 'POUSAR':
             if 'LEVANTAR' in stack and 'MOEDA' in stack and 'T' in stack:
                 stack = []
                 saldo_string = intToStringCoin(saldo)
                 print('maq: "troco= %s; Volte sempre!"' % saldo_string)
+                saldo = 0
             else:
                 print('maq: "Impossível POUSAR, por favor termine a interação ou então escolha ABORTAR" ')
+        # Interação de ABORTAR        
         elif linha.strip().upper() == 'ABORTAR':
             if len(stack)>0 and stack[-1] == 'T' or  stack[-1] == 'MOEDA':
                 stack = []
                 saldo_string = intToStringCoin(saldo)
                 print('maq: "Interação interrompida; troco= %s"' % saldo_string)
+                saldo = 0
             else:
                 stack = []
                 print('maq: "Interação interrompida; sem saldo para retornar"')
-            
+        # Interação impossível
         else:
             print('maq: "Não é possível realizar a chamada"')
             
