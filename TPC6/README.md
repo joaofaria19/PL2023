@@ -3,8 +3,8 @@
 O trabalho para casa 6, da unidade curricular de Processamento de linguagens consiste na elaboração de analisador léxico para uma linguagem de programação previamente fornecida. Usando a biblioteca Ply o analisador léxico deve realizar a devida análise de um ficheiro de texto escrito na linguagem fornecida, e em seguida devolver a lista de tokens para a linguagem de programação.
 
 ### Exemplo 1 da linguagem fornecida
-{
 
+```
 /* factorial.p
 -- 2023-03-20 
 -- by jcr
@@ -29,9 +29,11 @@ program myFact{
   }
 }
 
-}
+```
+
 ### Exemplo 2 da linguagem fornecida
 
+```
 /* max.p: calcula o maior inteiro duma lista desordenada
 -- 2023-03-20 
 -- by jcr
@@ -49,3 +51,4 @@ program myMax{
   }
   print(max);
 }
+```
